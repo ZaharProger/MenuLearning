@@ -14,7 +14,9 @@ import androidx.annotation.Nullable;
 
 import com.example.menulearning.R;
 import com.example.menulearning.activities.MainActivity;
+import com.example.menulearning.constants.PrefsValues;
 import com.example.menulearning.constants.ValidationTypes;
+import com.example.menulearning.entities.BaseEntity;
 import com.example.menulearning.entities.ValidationCase;
 import com.example.menulearning.entities.ValidationResult;
 import com.example.menulearning.managers.Validator;
@@ -24,14 +26,14 @@ import java.util.ArrayList;
 public class StartFragment extends BaseFragment {
 
     public StartFragment(int fragmentViewId) {
-        super(fragmentViewId);
+        this.fragmentViewId = fragmentViewId;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View fragmentView = inflater.inflate(R.layout.fragment_start, container, false);
+        fragmentView = inflater.inflate(R.layout.fragment_start, container, false);
 
         EditText nameField = fragmentView.findViewById(R.id.nameField);
         nameField.setBackgroundTintList(ColorStateList
@@ -63,7 +65,10 @@ public class StartFragment extends BaseFragment {
             errorText.setText(result.getMessage());
 
             if (result.isResult()) {
-                ((MainActivity) getActivity()).updateView(R.id.startItem, true);
+                MainActivity parentActivity = (MainActivity) getActivity();
+                parentActivity.getBooleanPrefsManager()
+                        .putItem(PrefsValues.TEST_FLAG_KEY.getStringValue(), true);
+                parentActivity.getRouter().route(R.layout.fragment_test);
             }
         });
 
@@ -75,5 +80,10 @@ public class StartFragment extends BaseFragment {
         super.onViewStateRestored(savedInstanceState);
 
         ((EditText) getView().findViewById(R.id.nameField)).setText("");
+    }
+
+    @Override
+    public void updateView(BaseEntity<Integer> relatedEntity, View relatedView) {
+
     }
 }

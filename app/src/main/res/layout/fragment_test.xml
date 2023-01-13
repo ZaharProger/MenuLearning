@@ -15,13 +15,15 @@
             android:id="@+id/questionText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@color/primary"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/question_block_style"
             android:padding="10dp"
             android:textAlignment="center"
-            android:textColor="@color/text"
-            android:textColorHighlight="@color/primary"
-            android:textColorLink="@color/primary"
+            android:textColor="@color/app_background"
+            android:textColorHighlight="@color/text"
+            android:textColorLink="@color/text"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -33,7 +35,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:padding="10dp"
-            android:text="@string/question_header"
             android:textAlignment="center"
             android:textColor="@color/primary"
             android:textColorHighlight="@color/text"
@@ -43,6 +44,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/answersList"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp"
+            android:background="@color/transparent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/questionText" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

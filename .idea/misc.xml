@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/drawable/about_item_style.xml" value="0.166" />
         <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/drawable/button_style.xml" value="0.2265" />
+        <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/drawable/correct_answer_style.xml" value="0.166" />
         <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/drawable/history_item_style.xml" value="0.166" />
         <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/drawable/ic_about.xml" value="0.2265" />
         <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/drawable/ic_about_active.xml" value="0.166" />
@@ -17,8 +18,11 @@
         <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/drawable/input_field_style.xml" value="0.2265" />
         <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/drawable/nav_item_style.xml" value="0.166" />
         <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/drawable/navbar_style.xml" value="0.166" />
+        <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/drawable/question_block_style.xml" value="0.166" />
         <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/drawable/start_item_style.xml" value="0.166" />
+        <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/drawable/wrong_answer_style.xml" value="0.166" />
         <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/layout/activity_main.xml" value="0.18432971014492755" />
+        <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/layout/answers_list_item.xml" value="0.1721311475409836" />
         <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/layout/fragment_about.xml" value="0.2" />
         <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/layout/fragment_start.xml" value="0.22826086956521738" />
         <entry key="..\:/Users/domol_000/AndroidStudioProjects/MenuLearning/app/src/main/res/layout/fragment_test.xml" value="0.22826086956521738" />

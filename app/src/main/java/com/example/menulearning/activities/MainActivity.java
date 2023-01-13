@@ -11,17 +11,30 @@ import com.example.menulearning.entities.PrefsItem;
 import com.example.menulearning.fragments.AboutFragment;
 import com.example.menulearning.fragments.BaseFragment;
 import com.example.menulearning.fragments.StartFragment;
+import com.example.menulearning.fragments.TestFragment;
 import com.example.menulearning.managers.PrefsManager;
-import com.example.menulearning.managers.ViewRenderer;
+import com.example.menulearning.managers.Router;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private ViewRenderer viewRenderer;
-    private PrefsManager<String> stringPrefsManager;
     private PrefsManager<Boolean> booleanPrefsManager;
+    private PrefsManager<String> stringPrefsManager;
+    private Router router;
+
+    public PrefsManager<Boolean> getBooleanPrefsManager() {
+        return booleanPrefsManager;
+    }
+
+    public PrefsManager<String> getStringPrefsManager() {
+        return stringPrefsManager;
+    }
+
+    public Router getRouter() {
+        return router;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +58,10 @@ public class MainActivity extends AppCompatActivity {
 
         List<BaseFragment> fragments = Arrays.asList(
                 new StartFragment(R.id.startItem),
-                new AboutFragment(R.id.aboutItem, stringPrefsManager)
+                new AboutFragment(R.id.aboutItem),
+                new TestFragment(R.layout.fragment_test)
         );
-        viewRenderer = new ViewRenderer(this, R.id.viewContainer, fragments);
+        router = Router.getInstance(this, R.id.viewContainer, fragments);
 
         BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
         navigationBar.setOnItemSelectedListener((item) -> {
@@ -62,14 +76,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            return viewRenderer.render(itemId);
+            return router.route(itemId);
         });
         navigationBar.setSelectedItemId(R.id.startItem);
-    }
-
-    public void updateView(int viewId, boolean fromFragment) {
-        booleanPrefsManager.putItem(PrefsValues.TEST_FLAG_KEY.getStringValue(), fromFragment);
-        viewRenderer.render(viewId);
     }
 
     @Override
