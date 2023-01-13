@@ -58,7 +58,7 @@ public class StartFragment extends BaseFragment {
         Button startButton = fragmentView.findViewById(R.id.startButton);
         startButton.setOnClickListener(view -> {
             ValidationResult result = validator.validate(nameField.getText().toString());
-            int colorId = result.isResult()? R.color.primary : R.color.wrong_answer;
+            int colorId = result.isResult()? R.color.primary : R.color.bad_result;
 
             nameField.setBackgroundTintList(ColorStateList
                     .valueOf(getContext().getColor(colorId)));

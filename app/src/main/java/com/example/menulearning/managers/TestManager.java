@@ -36,4 +36,8 @@ public class TestManager {
     public String makeStatistics() {
         return String.format("%d/%d", correctAnswers, questions.size());
     }
+
+    public int getPercentage() {
+        return correctAnswers * 100 / questions.size();
+    }
 }

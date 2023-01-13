@@ -7,8 +7,10 @@
     <string name="wrong_answer">Ответ неверный!</string>
     <string name="question_header">Вопрос</string>
     <string name="name_field_hint">Ваше ФИО…</string>
+    <string name="result_header">Ваш результат:</string>
     <string name="intro_text">Введение</string>
     <string name="rules_text">Как проверить свои знания?</string>
     <string name="extra_characters_error">Поле содержит недопустимые символы!</string>
     <string name="empty_string_error">Поле не заполнено!</string>
+    <string name="result_footer">Вы можете посмотреть подробные результаты тестирования, нажав на кнопку \"Результаты\"</string>
 </resources>

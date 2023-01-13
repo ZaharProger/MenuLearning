@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,6 +40,10 @@ public class TestFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_test, container, false);
+
+        ((TextView) fragmentView.findViewById(R.id.resultText)).setVisibility(View.INVISIBLE);
+        ((TextView) fragmentView.findViewById(R.id.resultFooterText)).setVisibility(View.INVISIBLE);
+        ((ImageView) fragmentView.findViewById(R.id.appLogo)).setVisibility(View.INVISIBLE);
 
         RecyclerView answersList = fragmentView.findViewById(R.id.answersList);
         answersList.setHasFixedSize(true);
@@ -94,8 +99,19 @@ public class TestFragment extends BaseFragment {
                     PrefsValues.PREFS_NAME.getStringValue()
             );
             prefsManager.putItem(PrefsValues.TEST_FLAG_KEY.getStringValue(), false);
-            testManager.makeStatistics();
-            //TODO: Сделать фрагмент для отображения результатов тестирования
+
+            String result = testManager.makeStatistics();
+            int percentage = testManager.getPercentage();
+            int colorId = percentage < 50? R.color.bad_result : percentage < 80? R.color.ok_result :
+                    R.color.good_result;
+            TextView resultText = fragmentView.findViewById(R.id.resultText);
+            resultText.setTextColor(getContext().getColor(colorId));
+            resultText.setText(String.format("%s %s",
+                    getString(R.string.result_header), result));
+
+            resultText.setVisibility(View.VISIBLE);
+            ((TextView) fragmentView.findViewById(R.id.resultFooterText)).setVisibility(View.VISIBLE);
+            ((ImageView) fragmentView.findViewById(R.id.appLogo)).setVisibility(View.VISIBLE);
         }
     }
 }
