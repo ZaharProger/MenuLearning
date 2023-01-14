@@ -23,12 +23,14 @@ import com.example.menulearning.entities.BaseEntity;
 import com.example.menulearning.entities.Question;
 import com.example.menulearning.entities.QuestionView;
 import com.example.menulearning.entities.Result;
+import com.example.menulearning.managers.Buffer;
 import com.example.menulearning.managers.DbManager;
 import com.example.menulearning.managers.TestManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class TestFragment extends BaseFragment {
     private DbManager dbManager;
@@ -53,11 +55,17 @@ public class TestFragment extends BaseFragment {
         answersList.setLayoutManager(new LinearLayoutManager(getContext()));
         answersList.setAdapter(new AnswersListAdapter(new ArrayList<>(), Arrays.asList(this)));
 
-        dbManager = DbManager.getInstance(getContext(),
-                ((MainActivity) getActivity()).getSharedPreferences());
-        dbManager.fillRepositories();
-        ArrayList<Question> questions = dbManager.getQuestionsWithAnswers(8);
-        testManager = new TestManager(questions);
+        if (Buffer.getTestManager() == null) {
+            dbManager = DbManager.getInstance(getContext(),
+                    ((MainActivity) getActivity()).getSharedPreferences());
+            dbManager.fillRepositories();
+            ArrayList<Question> questions = dbManager.getQuestionsWithAnswers(8);
+            testManager = new TestManager(questions);
+        }
+        else {
+            testManager = Buffer.getTestManager();
+        }
+
         updateView(null, null);
 
         return fragmentView;
@@ -71,35 +79,37 @@ public class TestFragment extends BaseFragment {
                         R.drawable.correct_answer_style : R.drawable.wrong_answer_style;
                 relatedView.setBackground(AppCompatResources
                         .getDrawable(getContext(), backgroundId));
-
-                new ScheduledThreadPoolExecutor(1).execute(() -> {
-                    try {
-                        Thread.sleep(3000);
-                    }
-                    catch (InterruptedException ignored) {
-
-                    }
-                });
             }
-        }
 
+            new ScheduledThreadPoolExecutor(1).schedule(() -> {
+                renderComponents();
+                relatedView.setBackground(AppCompatResources
+                        .getDrawable(getContext(), R.drawable.answer_block_style));
+            }, 1500, TimeUnit.MILLISECONDS);
+        }
+        else {
+            renderComponents();
+        }
+    }
+
+    private void renderComponents() {
         TextView questionNumber = fragmentView.findViewById(R.id.questionNumber);
         TextView questionText = fragmentView.findViewById(R.id.questionText);
-
-        AnswersListAdapter adapter = (AnswersListAdapter) ((RecyclerView)
-                fragmentView.findViewById(R.id.answersList)).getAdapter();
 
         QuestionView questionView = testManager.getQuestionView();
         if (questionView != null) {
             String newQuestionNumber = String.format("%s %d", getString(R.string.question_header),
-                    questionView.getQuestionNumber());
+                    questionView.getQuestionNumber() + 1);
 
             questionNumber.setText(newQuestionNumber);
             questionText.setText(questionView.getQuestion().getText());
+
+            AnswersListAdapter adapter = (AnswersListAdapter) ((RecyclerView)
+                    fragmentView.findViewById(R.id.answersList)).getAdapter();
+
             adapter.setAnswers(questionView.getQuestion().getAnswers());
         }
         else {
-
             SharedPreferences prefs= ((MainActivity) getActivity()).getSharedPreferences();
             SharedPreferences.Editor prefsEditor = prefs.edit();
             prefsEditor.putBoolean(PrefsValues.TEST_FLAG_KEY.getStringValue(), false);
@@ -114,6 +124,10 @@ public class TestFragment extends BaseFragment {
             resultText.setTextColor(getContext().getColor(colorId));
             resultText.setText(String.format("%s %s", getString(R.string.result_header), result));
 
+            questionNumber.setVisibility(View.INVISIBLE);
+            questionText.setVisibility(View.INVISIBLE);
+            fragmentView.findViewById(R.id.answersList).setVisibility(View.INVISIBLE);
+
             resultText.setVisibility(View.VISIBLE);
             fragmentView.findViewById(R.id.resultFooterText).setVisibility(View.VISIBLE);
             fragmentView.findViewById(R.id.appLogo).setVisibility(View.VISIBLE);
@@ -123,5 +137,17 @@ public class TestFragment extends BaseFragment {
             dbManager.addResult(new Result(0, userName, result,
                     System.currentTimeMillis() / 1000L));
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        String questionNumberString = ((TextView) fragmentView
+                .findViewById(R.id.questionNumber)).getText().toString();
+        int number = Integer.parseInt(questionNumberString.split("[\\s]+")[1]) - 2;
+
+        testManager.setCurrentQuestion(number);
+        Buffer.setTestManager(testManager);
     }
 }

@@ -42,8 +42,7 @@ public class AnswersListAdapter extends
 
         holder.answerText.setText(answer.getText());
         holder.answerText.setOnClickListener(view ->
-            observers.forEach(observer -> observer.updateView(answer, holder.answerText))
-        );
+            observers.forEach(observer -> observer.updateView(answer, holder.answerText)));
     }
 
     @Override
@@ -53,12 +52,14 @@ public class AnswersListAdapter extends
 
     public void setAnswers(ArrayList<Answer> answers) {
         if (this.answers.size() != 0) {
+            int prevSize = answers.size();
             this.answers.clear();
-            notifyDataSetChanged();
+
+            notifyItemRangeRemoved(0, prevSize);
         }
 
         this.answers = answers;
-        notifyDataSetChanged();
+        notifyItemRangeChanged(0, answers.size());
     }
 
     static class AnswersListViewHolder extends RecyclerView.ViewHolder {

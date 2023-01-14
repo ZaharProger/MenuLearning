@@ -3,7 +3,6 @@ package com.example.menulearning.activities;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -67,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
             String testFlagKey = PrefsValues.TEST_FLAG_KEY.getStringValue();
             if (route == Routes.START && sharedPreferences.contains(testFlagKey)) {
                 if (sharedPreferences.getBoolean(testFlagKey, false)) {
-                    Log.e("PREFS", "1");
                     route = Routes.TEST;
                 }
             }

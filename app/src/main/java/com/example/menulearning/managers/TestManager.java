@@ -13,14 +13,18 @@ public class TestManager {
     public TestManager(ArrayList<Question> questions) {
         this.questions = questions;
         correctAnswers = 0;
-        currentQuestion = 0;
+        currentQuestion = -1;
+    }
+
+    public void setCurrentQuestion(int currentQuestion) {
+        this.currentQuestion = currentQuestion;
     }
 
     public QuestionView getQuestionView() {
         Question question = null;
         if (currentQuestion < questions.size()) {
-            question = questions.get(currentQuestion);
             currentQuestion += 1;
+            question = questions.get(currentQuestion);
         }
 
         return question != null? new QuestionView(currentQuestion, question) : null;

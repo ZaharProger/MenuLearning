@@ -4,6 +4,7 @@
     <color name="good_result">#0DE143</color>
     <color name="bad_result">#FF0000</color>
     <color name="ok_result">#FFA200</color>
+    <color name="question_block">#3A5548</color>
     <color name="text">#16201B</color>
     <color name="text_hint">#8816201B</color>
     <color name="black">#000000</color>
