@@ -1,5 +1,6 @@
 package com.example.menulearning.fragments;
 
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.example.menulearning.R;
 import com.example.menulearning.activities.MainActivity;
 import com.example.menulearning.constants.PrefsValues;
+import com.example.menulearning.constants.Routes;
 import com.example.menulearning.constants.ValidationTypes;
 import com.example.menulearning.entities.BaseEntity;
 import com.example.menulearning.entities.ValidationCase;
@@ -25,7 +27,7 @@ import java.util.ArrayList;
 
 public class StartFragment extends BaseFragment {
 
-    public StartFragment(int fragmentViewId) {
+    public StartFragment(Routes fragmentViewId) {
         this.fragmentViewId = fragmentViewId;
     }
 
@@ -57,7 +59,8 @@ public class StartFragment extends BaseFragment {
 
         Button startButton = fragmentView.findViewById(R.id.startButton);
         startButton.setOnClickListener(view -> {
-            ValidationResult result = validator.validate(nameField.getText().toString());
+            String name = nameField.getText().toString();
+            ValidationResult result = validator.validate(name);
             int colorId = result.isResult()? R.color.primary : R.color.bad_result;
 
             nameField.setBackgroundTintList(ColorStateList
@@ -66,9 +69,14 @@ public class StartFragment extends BaseFragment {
 
             if (result.isResult()) {
                 MainActivity parentActivity = (MainActivity) getActivity();
-                parentActivity.getBooleanPrefsManager()
-                        .putItem(PrefsValues.TEST_FLAG_KEY.getStringValue(), true);
-                parentActivity.getRouter().route(R.layout.fragment_test);
+
+                SharedPreferences prefs = parentActivity.getSharedPreferences();
+                SharedPreferences.Editor prefsEditor = prefs.edit();
+                prefsEditor.putBoolean(PrefsValues.TEST_FLAG_KEY.getStringValue(), true);
+                prefsEditor.putString(PrefsValues.USER_NAME.getStringValue(), name.trim());
+                prefsEditor.apply();
+
+                parentActivity.getRouter().route(Routes.TEST);
             }
         });
 

@@ -1,8 +1,11 @@
 package com.example.menulearning.managers;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.util.Log;
 
-import com.example.menulearning.R;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.example.menulearning.constants.Routes;
 import com.example.menulearning.fragments.BaseFragment;
 
 import java.util.HashMap;
@@ -12,7 +15,7 @@ import java.util.Objects;
 public class Router {
     private static Router router;
     private int root;
-    private HashMap<Integer, BaseFragment> routeTable;
+    private HashMap<Routes, BaseFragment> routeTable;
     private AppCompatActivity activityRef;
 
     private Router(AppCompatActivity activityRef, int root, List<BaseFragment> fragments) {
@@ -21,7 +24,7 @@ public class Router {
         routeTable = new HashMap<>();
 
         fragments.forEach(fragment -> {
-            int fragmentViewId = fragment.getFragmentViewId();
+            Routes fragmentViewId = fragment.getFragmentViewId();
             if (!routeTable.containsKey(fragmentViewId)) {
                 routeTable.put(fragmentViewId, fragment);
             }
@@ -38,19 +41,15 @@ public class Router {
         return router;
     }
 
-    public boolean route(int viewId) {
-        boolean hasKey = routeTable.containsKey(viewId);
+    public boolean route(Routes route) {
+        boolean hasKey = routeTable.containsKey(route);
 
         if (hasKey) {
-            try {
-                activityRef.getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(root, Objects.requireNonNull(routeTable.get(viewId)))
-                        .commitNow();
-            }
-            catch (NullPointerException e) {
-                hasKey = false;
-            }
+            activityRef.getSupportFragmentManager()
+                    .beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .replace(root, Objects.requireNonNull(routeTable.get(route)))
+                    .commitNow();
         }
 
         return hasKey;

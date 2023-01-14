@@ -1,6 +1,7 @@
 package com.example.menulearning.managers;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -27,26 +28,22 @@ public class DbManager extends SQLiteOpenHelper {
     private ArrayList<Question> questions;
     private ArrayList<Answer> answers;
     private ArrayList<Result> results;
-    private PrefsManager<Boolean> booleanPrefsManager;
+    private SharedPreferences prefs;
 
-    private DbManager(Context context) {
+    private DbManager(Context context, SharedPreferences prefs) {
         super(context, DbValues.DB_NAME.getStringValue(), null,
                 Integer.parseInt(DbValues.DB_SCHEMA.getStringValue()));
 
+        this.prefs = prefs;
         questions = new ArrayList<>();
         answers = new ArrayList<>();
         results = new ArrayList<>();
         random = new Random();
-
-        booleanPrefsManager = new PrefsManager<>(
-                context,
-                PrefsValues.PREFS_NAME.getStringValue()
-        );
     }
 
-    public static synchronized DbManager getInstance(Context context) {
+    public static synchronized DbManager getInstance(Context context, SharedPreferences prefs) {
         if (dbManager == null) {
-            dbManager = new DbManager(context);
+            dbManager = new DbManager(context, prefs);
         }
 
         return dbManager;
@@ -54,107 +51,107 @@ public class DbManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        List<DbValues> requests = Arrays.asList(
-                DbValues.CREATE_QUESTIONS_TABLE,
-                DbValues.CREATE_ANSWERS_TABLE,
-                DbValues.CREATE_CORRECT_ANSWERS_TABLE,
-                DbValues.CREATE_RESULTS_TABLE
-        );
+        ArrayList<DbValues> requests = new ArrayList<>();
+        requests.add(DbValues.CREATE_QUESTIONS_TABLE);
+        requests.add(DbValues.CREATE_ANSWERS_TABLE);
+        requests.add(DbValues.CREATE_CORRECT_ANSWERS_TABLE);
+        requests.add(DbValues.CREATE_RESULTS_TABLE);
 
-        if (!booleanPrefsManager.hasItem(PrefsValues.DATA_INSERTED_FLAG_KEY.getStringValue())) {
+        if (!prefs.contains(PrefsValues.DATA_INSERTED_FLAG_KEY.getStringValue())) {
             requests.add(DbValues.INSERT_QUESTIONS);
             requests.add(DbValues.INSERT_ANSWERS);
             requests.add(DbValues.INSERT_CORRECT_ANSWERS);
         }
 
-        requests.add(DbValues.GET_ANSWERS);
-        requests.add(DbValues.GET_QUESTIONS);
-        requests.add(DbValues.GET_CORRECT_ANSWERS);
-        
-
         for (DbValues request : requests) {
-            if (request == DbValues.GET_QUESTIONS || request == DbValues.GET_ANSWERS ||
-            request == DbValues.GET_CORRECT_ANSWERS) {
-                fillRepositories(sqLiteDatabase, request);
-            }
-            else {
-                sqLiteDatabase.execSQL(request.getStringValue());
-            }
+            sqLiteDatabase.execSQL(request.getStringValue());
         }
 
-        if (!booleanPrefsManager.hasItem(PrefsValues.DATA_INSERTED_FLAG_KEY.getStringValue())) {
-            booleanPrefsManager.putItem(PrefsValues.DATA_INSERTED_FLAG_KEY.getStringValue(), true);
+        if (!prefs.contains(PrefsValues.DATA_INSERTED_FLAG_KEY.getStringValue())) {
+            SharedPreferences.Editor prefsEditor = prefs.edit();
+            prefsEditor.putBoolean(PrefsValues.DATA_INSERTED_FLAG_KEY.getStringValue(), true);
+
+            prefsEditor.apply();
         }
     }
 
-    private void fillRepositories(SQLiteDatabase database, DbValues requestType) {
+    public void fillRepositories() {
+        SQLiteDatabase database = getWritableDatabase();
+
+        List<DbValues> getRequests = Arrays.asList(
+                DbValues.GET_ANSWERS,
+                DbValues.GET_QUESTIONS,
+                DbValues.GET_CORRECT_ANSWERS
+        );
         HashMap<Integer, Integer> correctAnswersIds = new HashMap<>();
 
-        try {
-            Cursor cursor = database.rawQuery(requestType.getStringValue(), null);
+        getRequests.forEach(request -> {
+            try {
+                Cursor cursor = database.rawQuery(request.getStringValue(), null);
 
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
-                    do {
-                        int idColumnIndex = cursor
-                                .getColumnIndex(DbValues.ID_KEY.getStringValue());
-                        int textColumnIndex = cursor
-                                .getColumnIndex(DbValues.TEXT_KEY.getStringValue());
-                        int questionIdColumnIndex = cursor
-                                .getColumnIndex(DbValues.QUESTION_ID_KEY.getStringValue());
-                        int answerIdColumnIndex = cursor
-                                .getColumnIndex(DbValues.ANSWER_ID_KEY.getStringValue());
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        do {
+                            int idColumnIndex = cursor
+                                    .getColumnIndex(DbValues.ID_KEY.getStringValue());
+                            int textColumnIndex = cursor
+                                    .getColumnIndex(DbValues.TEXT_KEY.getStringValue());
+                            int questionIdColumnIndex = cursor
+                                    .getColumnIndex(DbValues.QUESTION_ID_KEY.getStringValue());
+                            int answerIdColumnIndex = cursor
+                                    .getColumnIndex(DbValues.ANSWER_ID_KEY.getStringValue());
 
-                        switch (requestType) {
-                            case GET_QUESTIONS:
-                                int questionId = cursor.getInt(idColumnIndex);
-                                ArrayList<Answer> questionAnswers = (ArrayList<Answer>) answers
-                                        .stream()
-                                        .filter(answer -> answer.getQuestionId() == questionId)
-                                        .collect(Collectors.toList());
+                            switch (request) {
+                                case GET_QUESTIONS:
+                                    int questionId = cursor.getInt(idColumnIndex);
+                                    ArrayList<Answer> questionAnswers = (ArrayList<Answer>) answers
+                                            .stream()
+                                            .filter(answer -> answer.getQuestionId() == questionId)
+                                            .collect(Collectors.toList());
 
-                                questions.add(new Question(
-                                        questionId,
-                                        cursor.getString(textColumnIndex),
-                                        0,
-                                        questionAnswers
-                                ));
-                                break;
-                            case GET_ANSWERS:
-                                answers.add(new Answer(
-                                        cursor.getInt(idColumnIndex),
-                                        cursor.getString(textColumnIndex),
-                                        cursor.getInt(questionIdColumnIndex)
-                                ));
-                                break;
-                            case GET_CORRECT_ANSWERS:
-                                int answerId = cursor.getInt(answerIdColumnIndex);
-                                questionId = cursor.getInt(questionIdColumnIndex);
+                                    questions.add(new Question(
+                                            questionId,
+                                            cursor.getString(textColumnIndex),
+                                            0,
+                                            questionAnswers
+                                    ));
+                                    break;
+                                case GET_ANSWERS:
+                                    answers.add(new Answer(
+                                            cursor.getInt(idColumnIndex),
+                                            cursor.getString(textColumnIndex),
+                                            cursor.getInt(questionIdColumnIndex)
+                                    ));
+                                    break;
+                                case GET_CORRECT_ANSWERS:
+                                    int answerId = cursor.getInt(answerIdColumnIndex);
+                                    questionId = cursor.getInt(questionIdColumnIndex);
 
-                                correctAnswersIds.put(questionId, answerId);
-                                break;
-                        }
-                    } while (cursor.moveToNext());
+                                    correctAnswersIds.put(questionId, answerId);
+                                    break;
+                            }
+                        } while (cursor.moveToNext());
+                    }
+
+                    cursor.close();
                 }
-
-                cursor.close();
             }
-        }
-        catch (SQLException ignored) {
-            
-        }
+            catch (SQLException ignored) {
 
-        if (requestType == DbValues.GET_CORRECT_ANSWERS) {
-            questions = (ArrayList<Question>) questions
-                    .stream()
-                    .map(question -> new Question(
-                        question.getKey(),
-                        question.getText(),
-                        correctAnswersIds.get(question.getKey()),
-                        question.getAnswers()
-                    ))
-                    .collect(Collectors.toList());
-        }
+            }
+
+            if (request == DbValues.GET_CORRECT_ANSWERS) {
+                questions = (ArrayList<Question>) questions
+                        .stream()
+                        .map(question -> new Question(
+                                question.getKey(),
+                                question.getText(),
+                                correctAnswersIds.get(question.getKey()),
+                                question.getAnswers()
+                        ))
+                        .collect(Collectors.toList());
+            }
+        });
     }
 
     @Override
@@ -181,7 +178,13 @@ public class DbManager extends SQLiteOpenHelper {
         int i = 0;
         while (i < amount) {
             Question question = questions.get(random.nextInt(questions.size()));
-            if (questions.stream().noneMatch(q -> Objects.equals(q.getKey(), question.getKey()))) {
+            boolean isNotExists = chosenQuestions
+                    .stream()
+                    .noneMatch(chosenQuestion ->
+                            Objects.equals(chosenQuestion.getKey(), question.getKey()));
+
+            if (isNotExists) {
+                chosenQuestions.add(question);
                 i += 1;
             }
         }

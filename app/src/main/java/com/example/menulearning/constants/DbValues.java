@@ -1,8 +1,8 @@
 package com.example.menulearning.constants;
 
 public enum DbValues implements EnumDecoder {
-    DB_NAME("menu_learning.db"),
-    DB_SCHEMA("1"),
+    DB_NAME("menulearning.db"),
+    DB_SCHEMA("8"),
     ID_KEY("id"),
     TEXT_KEY("text"),
     QUESTION_ID_KEY("question_id"),

@@ -11,7 +11,8 @@ public enum PrefsValues implements EnumDecoder {
        "которых верный. После завершения тестирования Вы можете посмотреть ваши результаты, " +
        "нажав на кнопку \"Результаты\"."),
     TEST_FLAG_KEY("test_flag"),
-    DATA_INSERTED_FLAG_KEY("data_inserted");
+    DATA_INSERTED_FLAG_KEY("data_inserted"),
+    USER_NAME("user_name");
 
 
     private String stringValue;

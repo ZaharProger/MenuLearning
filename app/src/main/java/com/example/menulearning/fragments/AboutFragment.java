@@ -1,5 +1,6 @@
 package com.example.menulearning.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,14 +12,13 @@ import androidx.annotation.Nullable;
 
 import com.example.menulearning.R;
 import com.example.menulearning.activities.MainActivity;
-import com.example.menulearning.constants.PrefsTypes;
 import com.example.menulearning.constants.PrefsValues;
+import com.example.menulearning.constants.Routes;
 import com.example.menulearning.entities.BaseEntity;
-import com.example.menulearning.managers.PrefsManager;
 
 public class AboutFragment extends BaseFragment {
 
-    public AboutFragment(int fragmentViewId) {
+    public AboutFragment(Routes fragmentViewId) {
         this.fragmentViewId = fragmentViewId;
     }
 
@@ -28,18 +28,15 @@ public class AboutFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_about, container, false);
 
-        MainActivity parentActivity = (MainActivity) getActivity();
-        PrefsManager<String> stringPrefsManager = parentActivity.getStringPrefsManager();
+        SharedPreferences prefs = ((MainActivity) getActivity()).getSharedPreferences();
 
         String prefsKey = PrefsValues.INTRO_TEXT_KEY.getStringValue();
-        String textFromPrefs = stringPrefsManager.getItem(prefsKey, PrefsTypes.STRING).getValue();
         ((TextView) fragmentView.findViewById(R.id.introText))
-                .setText((CharSequence) textFromPrefs);
+                .setText(prefs.getString(prefsKey, ""));
 
         prefsKey = PrefsValues.RULES_TEXT_KEY.getStringValue();
-        textFromPrefs = stringPrefsManager.getItem(prefsKey, PrefsTypes.STRING).getValue();
         ((TextView) fragmentView.findViewById(R.id.rulesText))
-                .setText((CharSequence) textFromPrefs);
+                .setText(prefs.getString(prefsKey, ""));
 
         return fragmentView;
     }
