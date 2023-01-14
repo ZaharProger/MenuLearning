@@ -57,7 +57,7 @@ public class TestFragment extends BaseFragment {
 
         if (Buffer.getTestManager() == null) {
             dbManager = DbManager.getInstance(getContext(),
-                    ((MainActivity) getActivity()).getSharedPreferences());
+                    ((MainActivity) getActivity()).getPrefs());
             dbManager.fillRepositories();
             ArrayList<Question> questions = dbManager.getQuestionsWithAnswers(8);
             testManager = new TestManager(questions);
@@ -110,7 +110,7 @@ public class TestFragment extends BaseFragment {
             adapter.setAnswers(questionView.getQuestion().getAnswers());
         }
         else {
-            SharedPreferences prefs= ((MainActivity) getActivity()).getSharedPreferences();
+            SharedPreferences prefs= ((MainActivity) getActivity()).getPrefs();
             SharedPreferences.Editor prefsEditor = prefs.edit();
             prefsEditor.putBoolean(PrefsValues.TEST_FLAG_KEY.getStringValue(), false);
             prefsEditor.apply();

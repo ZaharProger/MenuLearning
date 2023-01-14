@@ -36,7 +36,7 @@ public enum DbValues implements EnumDecoder {
     GET_QUESTIONS("SELECT * FROM questions;"),
     GET_ANSWERS("SELECT * FROM answers;"),
     GET_CORRECT_ANSWERS("SELECT question_id, answer_id FROM correct_answers;"),
-    GET_RESULTS_BY_NAME("SELECT * FROM results WHERE name = ?;"),
+    GET_RESULTS("SELECT * FROM results;"),
     INSERT_RESULT("INSERT INTO results(name, result, date) VALUES(?, ?, ?);"),
     INSERT_QUESTIONS("INSERT INTO questions(text) VALUES " +
             "('Определите напитки, являющиеся аперитивами'), " +

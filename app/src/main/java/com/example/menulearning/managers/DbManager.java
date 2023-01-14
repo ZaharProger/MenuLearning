@@ -81,7 +81,8 @@ public class DbManager extends SQLiteOpenHelper {
         List<DbValues> getRequests = Arrays.asList(
                 DbValues.GET_ANSWERS,
                 DbValues.GET_QUESTIONS,
-                DbValues.GET_CORRECT_ANSWERS
+                DbValues.GET_CORRECT_ANSWERS,
+                DbValues.GET_RESULTS
         );
         HashMap<Integer, Integer> correctAnswersIds = new HashMap<>();
 
@@ -159,9 +160,10 @@ public class DbManager extends SQLiteOpenHelper {
         if (newVersion == oldVersion + 1) {
             oldVersion = newVersion;
             List<DbValues> deleteRequests = Arrays.asList(
+                    DbValues.DROP_CORRECT_ANSWERS_TABLE,
                     DbValues.DROP_QUESTIONS_TABLE,
                     DbValues.DROP_ANSWERS_TABLE,
-                    DbValues.DROP_CORRECT_ANSWERS_TABLE
+                    DbValues.DROP_RESULTS_TABLE
             );
             for (DbValues deleteRequest : deleteRequests) {
                 sqLiteDatabase.execSQL(deleteRequest.getStringValue());
@@ -201,17 +203,15 @@ public class DbManager extends SQLiteOpenHelper {
         });
     }
 
-    public ArrayList<Result> getResultsByName(String name) {
+    public ArrayList<Result> getResults() {
         if (results.size() != 0) {
             results.clear();
         }
 
         try {
             SQLiteDatabase database = getReadableDatabase();
-            Cursor cursor = database.rawQuery(DbValues.GET_RESULTS_BY_NAME.getStringValue(),
-                    new String[]{
-                            name
-                    });
+            Cursor cursor = database.rawQuery(DbValues.GET_RESULTS
+                    .getStringValue(), null);
 
             if (cursor != null) {
                 if (cursor.moveToFirst()) {

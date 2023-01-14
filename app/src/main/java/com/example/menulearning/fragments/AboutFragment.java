@@ -28,7 +28,7 @@ public class AboutFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_about, container, false);
 
-        SharedPreferences prefs = ((MainActivity) getActivity()).getSharedPreferences();
+        SharedPreferences prefs = ((MainActivity) getActivity()).getPrefs();
 
         String prefsKey = PrefsValues.INTRO_TEXT_KEY.getStringValue();
         ((TextView) fragmentView.findViewById(R.id.introText))

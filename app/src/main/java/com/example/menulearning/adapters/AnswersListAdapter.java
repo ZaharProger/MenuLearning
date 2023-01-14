@@ -24,6 +24,7 @@ public class AnswersListAdapter extends
     public AnswersListAdapter(ArrayList<Answer> answers, List<BaseFragment> observers) {
         this.answers = answers;
         this.observers = observers;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -52,14 +53,11 @@ public class AnswersListAdapter extends
 
     public void setAnswers(ArrayList<Answer> answers) {
         if (this.answers.size() != 0) {
-            int prevSize = answers.size();
             this.answers.clear();
-
-            notifyItemRangeRemoved(0, prevSize);
         }
 
         this.answers = answers;
-        notifyItemRangeChanged(0, answers.size());
+        notifyDataSetChanged();
     }
 
     static class AnswersListViewHolder extends RecyclerView.ViewHolder {

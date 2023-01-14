@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         return router;
     }
 
-    public SharedPreferences getSharedPreferences() {
+    public SharedPreferences getPrefs() {
         return sharedPreferences;
     }
 

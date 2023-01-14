@@ -70,7 +70,7 @@ public class StartFragment extends BaseFragment {
             if (result.isResult()) {
                 MainActivity parentActivity = (MainActivity) getActivity();
 
-                SharedPreferences prefs = parentActivity.getSharedPreferences();
+                SharedPreferences prefs = parentActivity.getPrefs();
                 SharedPreferences.Editor prefsEditor = prefs.edit();
                 prefsEditor.putBoolean(PrefsValues.TEST_FLAG_KEY.getStringValue(), true);
                 prefsEditor.putString(PrefsValues.USER_NAME.getStringValue(), name.trim());
