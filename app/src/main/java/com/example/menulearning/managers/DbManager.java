@@ -7,8 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.menulearning.constants.DbValues;
+import com.example.menulearning.constants.PrefsValues;
 import com.example.menulearning.entities.Answer;
 import com.example.menulearning.entities.Question;
+import com.example.menulearning.entities.Result;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,10 +22,12 @@ import java.util.stream.Collectors;
 
 
 public class DbManager extends SQLiteOpenHelper {
-    private static Random random = new Random();
+    private Random random;
     private static DbManager dbManager;
     private ArrayList<Question> questions;
     private ArrayList<Answer> answers;
+    private ArrayList<Result> results;
+    private PrefsManager<Boolean> booleanPrefsManager;
 
     private DbManager(Context context) {
         super(context, DbValues.DB_NAME.getStringValue(), null,
@@ -31,6 +35,13 @@ public class DbManager extends SQLiteOpenHelper {
 
         questions = new ArrayList<>();
         answers = new ArrayList<>();
+        results = new ArrayList<>();
+        random = new Random();
+
+        booleanPrefsManager = new PrefsManager<>(
+                context,
+                PrefsValues.PREFS_NAME.getStringValue()
+        );
     }
 
     public static synchronized DbManager getInstance(Context context) {
@@ -47,22 +58,32 @@ public class DbManager extends SQLiteOpenHelper {
                 DbValues.CREATE_QUESTIONS_TABLE,
                 DbValues.CREATE_ANSWERS_TABLE,
                 DbValues.CREATE_CORRECT_ANSWERS_TABLE,
-                DbValues.INSERT_QUESTIONS,
-                DbValues.INSERT_ANSWERS,
-                DbValues.INSERT_CORRECT_ANSWERS,
-                DbValues.GET_ANSWERS,
-                DbValues.GET_QUESTIONS,
-                DbValues.GET_CORRECT_ANSWER_BY_QUESTION
+                DbValues.CREATE_RESULTS_TABLE
         );
+
+        if (!booleanPrefsManager.hasItem(PrefsValues.DATA_INSERTED_FLAG_KEY.getStringValue())) {
+            requests.add(DbValues.INSERT_QUESTIONS);
+            requests.add(DbValues.INSERT_ANSWERS);
+            requests.add(DbValues.INSERT_CORRECT_ANSWERS);
+        }
+
+        requests.add(DbValues.GET_ANSWERS);
+        requests.add(DbValues.GET_QUESTIONS);
+        requests.add(DbValues.GET_CORRECT_ANSWERS);
+        
 
         for (DbValues request : requests) {
             if (request == DbValues.GET_QUESTIONS || request == DbValues.GET_ANSWERS ||
-            request == DbValues.GET_CORRECT_ANSWER_BY_QUESTION) {
+            request == DbValues.GET_CORRECT_ANSWERS) {
                 fillRepositories(sqLiteDatabase, request);
             }
             else {
                 sqLiteDatabase.execSQL(request.getStringValue());
             }
+        }
+
+        if (!booleanPrefsManager.hasItem(PrefsValues.DATA_INSERTED_FLAG_KEY.getStringValue())) {
+            booleanPrefsManager.putItem(PrefsValues.DATA_INSERTED_FLAG_KEY.getStringValue(), true);
         }
     }
 
@@ -106,7 +127,7 @@ public class DbManager extends SQLiteOpenHelper {
                                         cursor.getInt(questionIdColumnIndex)
                                 ));
                                 break;
-                            case GET_CORRECT_ANSWER_BY_QUESTION:
+                            case GET_CORRECT_ANSWERS:
                                 int answerId = cursor.getInt(answerIdColumnIndex);
                                 questionId = cursor.getInt(questionIdColumnIndex);
 
@@ -120,10 +141,10 @@ public class DbManager extends SQLiteOpenHelper {
             }
         }
         catch (SQLException ignored) {
-
+            
         }
 
-        if (requestType == DbValues.GET_CORRECT_ANSWER_BY_QUESTION) {
+        if (requestType == DbValues.GET_CORRECT_ANSWERS) {
             questions = (ArrayList<Question>) questions
                     .stream()
                     .map(question -> new Question(
@@ -166,5 +187,58 @@ public class DbManager extends SQLiteOpenHelper {
         }
 
         return chosenQuestions;
+    }
+
+    public void addResult(Result result) {
+        SQLiteDatabase database = getWritableDatabase();
+        database.execSQL(DbValues.INSERT_RESULT.getStringValue(), new Object[]{
+                result.getName(),
+                result.getResult(),
+                result.getDate()
+        });
+    }
+
+    public ArrayList<Result> getResultsByName(String name) {
+        if (results.size() != 0) {
+            results.clear();
+        }
+
+        try {
+            SQLiteDatabase database = getReadableDatabase();
+            Cursor cursor = database.rawQuery(DbValues.GET_RESULTS_BY_NAME.getStringValue(),
+                    new String[]{
+                            name
+                    });
+
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        int idColumnIndex = cursor
+                                .getColumnIndex(DbValues.ID_KEY.getStringValue());
+                        int nameColumnIndex = cursor
+                                .getColumnIndex(DbValues.NAME_KEY.getStringValue());
+                        int resultColumnIndex = cursor
+                                .getColumnIndex(DbValues.RESULT_KEY.getStringValue());
+                        int dateColumnIndex = cursor
+                                .getColumnIndex(DbValues.DATE_KEY.getStringValue());
+
+                        results.add(new Result(
+                                cursor.getInt(idColumnIndex),
+                                cursor.getString(nameColumnIndex),
+                                cursor.getString(resultColumnIndex),
+                                cursor.getLong(dateColumnIndex)
+                        ));
+
+                    } while (cursor.moveToNext());
+                }
+
+                cursor.close();
+            }
+        }
+        catch (SQLException ignored) {
+
+        }
+
+        return results;
     }
 }

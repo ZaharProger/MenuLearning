@@ -10,7 +10,8 @@ public enum PrefsValues implements EnumDecoder {
        "Вам будет предложено ответить на 8 вопросов. В каждом вопросе 3 варианта ответов, 1 из " +
        "которых верный. После завершения тестирования Вы можете посмотреть ваши результаты, " +
        "нажав на кнопку \"Результаты\"."),
-    TEST_FLAG_KEY("test_flag");
+    TEST_FLAG_KEY("test_flag"),
+    DATA_INSERTED_FLAG_KEY("data_inserted");
 
 
     private String stringValue;

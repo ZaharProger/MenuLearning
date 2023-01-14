@@ -12,7 +12,6 @@ import com.example.menulearning.fragments.AboutFragment;
 import com.example.menulearning.fragments.BaseFragment;
 import com.example.menulearning.fragments.StartFragment;
 import com.example.menulearning.fragments.TestFragment;
-import com.example.menulearning.managers.DbManager;
 import com.example.menulearning.managers.PrefsManager;
 import com.example.menulearning.managers.Router;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -42,8 +41,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        DbManager.getInstance(getApplicationContext());
 
         booleanPrefsManager = new PrefsManager<>(
                 getApplicationContext(),

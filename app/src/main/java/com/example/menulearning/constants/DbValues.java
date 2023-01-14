@@ -7,6 +7,9 @@ public enum DbValues implements EnumDecoder {
     TEXT_KEY("text"),
     QUESTION_ID_KEY("question_id"),
     ANSWER_ID_KEY("answer_id"),
+    NAME_KEY("name"),
+    RESULT_KEY("result"),
+    DATE_KEY("date"),
     CREATE_QUESTIONS_TABLE("CREATE TABLE IF NOT EXISTS questions (" +
             "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
             "text VARCHAR(100) NOT NULL);"),
@@ -21,12 +24,20 @@ public enum DbValues implements EnumDecoder {
             "answer_id INTEGER," +
             "FOREIGN KEY (question_id) REFERENCES questions(id)," +
             "FOREIGN KEY (answer_id) REFERENCES answers(id));"),
+    CREATE_RESULTS_TABLE("CREATE TABLE IF NOT EXISTS results(" +
+            "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+            "name VARCHAR(100) NOT NULL," +
+            "result VARCHAR(10) NOT NULL," +
+            "date BIGINT NOT NULL);"),
     DROP_QUESTIONS_TABLE("DROP TABLE IF EXISTS questions;"),
     DROP_ANSWERS_TABLE("DROP TABLE IF EXISTS answers;"),
     DROP_CORRECT_ANSWERS_TABLE("DROP TABLE IF EXISTS correct_answers;"),
+    DROP_RESULTS_TABLE("DROP TABLE IF EXISTS results;"),
     GET_QUESTIONS("SELECT * FROM questions;"),
     GET_ANSWERS("SELECT * FROM answers;"),
-    GET_CORRECT_ANSWER_BY_QUESTION("SELECT question_id, answer_id FROM correct_answers;"),
+    GET_CORRECT_ANSWERS("SELECT question_id, answer_id FROM correct_answers;"),
+    GET_RESULTS_BY_NAME("SELECT * FROM results WHERE name = ?;"),
+    INSERT_RESULT("INSERT INTO results(name, result, date) VALUES(?, ?, ?);"),
     INSERT_QUESTIONS("INSERT INTO questions(text) VALUES " +
             "('Определите напитки, являющиеся аперитивами'), " +
             "('Определите группу вин, произведенных во Франции'), " +

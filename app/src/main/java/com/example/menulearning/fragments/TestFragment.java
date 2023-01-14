@@ -33,6 +33,7 @@ public class TestFragment extends BaseFragment {
 
     public TestFragment(int fragmentViewId) {
         this.fragmentViewId = fragmentViewId;
+        dbManager = DbManager.getInstance(getContext());
     }
 
     @Nullable
@@ -41,18 +42,16 @@ public class TestFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_test, container, false);
 
-        ((TextView) fragmentView.findViewById(R.id.resultText)).setVisibility(View.INVISIBLE);
-        ((TextView) fragmentView.findViewById(R.id.resultFooterText)).setVisibility(View.INVISIBLE);
-        ((ImageView) fragmentView.findViewById(R.id.appLogo)).setVisibility(View.INVISIBLE);
+        fragmentView.findViewById(R.id.resultText).setVisibility(View.INVISIBLE);
+        fragmentView.findViewById(R.id.resultFooterText).setVisibility(View.INVISIBLE);
+        fragmentView.findViewById(R.id.appLogo).setVisibility(View.INVISIBLE);
 
         RecyclerView answersList = fragmentView.findViewById(R.id.answersList);
         answersList.setHasFixedSize(true);
         answersList.setLayoutManager(new LinearLayoutManager(getContext()));
         answersList.setAdapter(new AnswersListAdapter(null, Arrays.asList(this)));
 
-        dbManager = DbManager.getInstance(getContext());
         ArrayList<Question> questions = dbManager.getQuestionsWithAnswers(8);
-
         testManager = new TestManager(questions);
         updateView(null, null);
 
@@ -65,7 +64,7 @@ public class TestFragment extends BaseFragment {
             if (relatedEntity instanceof Answer) {
                 int backgroundId = testManager.answerQuestion(relatedEntity.getKey())?
                         R.drawable.correct_answer_style : R.drawable.wrong_answer_style;
-                ((TextView) relatedView).setBackground(AppCompatResources
+                relatedView.setBackground(AppCompatResources
                         .getDrawable(getContext(), backgroundId));
 
                 ((Runnable) () -> {
@@ -110,8 +109,8 @@ public class TestFragment extends BaseFragment {
                     getString(R.string.result_header), result));
 
             resultText.setVisibility(View.VISIBLE);
-            ((TextView) fragmentView.findViewById(R.id.resultFooterText)).setVisibility(View.VISIBLE);
-            ((ImageView) fragmentView.findViewById(R.id.appLogo)).setVisibility(View.VISIBLE);
+            fragmentView.findViewById(R.id.resultFooterText).setVisibility(View.VISIBLE);
+            fragmentView.findViewById(R.id.appLogo).setVisibility(View.VISIBLE);
         }
     }
 }
