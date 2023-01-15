@@ -57,7 +57,7 @@ public class DbManager extends SQLiteOpenHelper {
         requests.add(DbValues.CREATE_CORRECT_ANSWERS_TABLE);
         requests.add(DbValues.CREATE_RESULTS_TABLE);
 
-        if (!prefs.contains(PrefsValues.DATA_INSERTED_FLAG_KEY.getStringValue())) {
+        if (!prefs.getBoolean(PrefsValues.DATA_INSERTED_FLAG_KEY.getStringValue(), false)) {
             requests.add(DbValues.INSERT_QUESTIONS);
             requests.add(DbValues.INSERT_ANSWERS);
             requests.add(DbValues.INSERT_CORRECT_ANSWERS);
@@ -76,6 +76,10 @@ public class DbManager extends SQLiteOpenHelper {
     }
 
     public void fillRepositories() {
+        questions.clear();
+        answers.clear();
+        results.clear();
+
         SQLiteDatabase database = getWritableDatabase();
 
         List<DbValues> getRequests = Arrays.asList(
@@ -130,6 +134,21 @@ public class DbManager extends SQLiteOpenHelper {
 
                                     correctAnswersIds.put(questionId, answerId);
                                     break;
+                                case GET_RESULTS:
+                                    int nameColumnIndex = cursor
+                                            .getColumnIndex(DbValues.NAME_KEY.getStringValue());
+                                    int resultColumnIndex = cursor
+                                            .getColumnIndex(DbValues.RESULT_KEY.getStringValue());
+                                    int dateColumnIndex = cursor
+                                            .getColumnIndex(DbValues.DATE_KEY.getStringValue());
+
+                                    results.add(new Result(
+                                            cursor.getInt(idColumnIndex),
+                                            cursor.getString(nameColumnIndex),
+                                            cursor.getString(resultColumnIndex),
+                                            cursor.getLong(dateColumnIndex)
+                                    ));
+                                    break;
                             }
                         } while (cursor.moveToNext());
                     }
@@ -169,6 +188,10 @@ public class DbManager extends SQLiteOpenHelper {
                 sqLiteDatabase.execSQL(deleteRequest.getStringValue());
             }
 
+            prefs.edit()
+                    .putBoolean(PrefsValues.DATA_INSERTED_FLAG_KEY.getStringValue(), false)
+                    .apply();
+
             onCreate(sqLiteDatabase);
         }
     }
@@ -204,44 +227,6 @@ public class DbManager extends SQLiteOpenHelper {
     }
 
     public ArrayList<Result> getResults() {
-        if (results.size() != 0) {
-            results.clear();
-        }
-
-        try {
-            SQLiteDatabase database = getReadableDatabase();
-            Cursor cursor = database.rawQuery(DbValues.GET_RESULTS
-                    .getStringValue(), null);
-
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
-                    do {
-                        int idColumnIndex = cursor
-                                .getColumnIndex(DbValues.ID_KEY.getStringValue());
-                        int nameColumnIndex = cursor
-                                .getColumnIndex(DbValues.NAME_KEY.getStringValue());
-                        int resultColumnIndex = cursor
-                                .getColumnIndex(DbValues.RESULT_KEY.getStringValue());
-                        int dateColumnIndex = cursor
-                                .getColumnIndex(DbValues.DATE_KEY.getStringValue());
-
-                        results.add(new Result(
-                                cursor.getInt(idColumnIndex),
-                                cursor.getString(nameColumnIndex),
-                                cursor.getString(resultColumnIndex),
-                                cursor.getLong(dateColumnIndex)
-                        ));
-
-                    } while (cursor.moveToNext());
-                }
-
-                cursor.close();
-            }
-        }
-        catch (SQLException ignored) {
-
-        }
-
         return results;
     }
 }

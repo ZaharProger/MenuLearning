@@ -52,11 +52,9 @@ public class AnswersListAdapter extends
     }
 
     public void setAnswers(ArrayList<Answer> answers) {
-        if (this.answers.size() != 0) {
-            this.answers.clear();
-        }
+        this.answers.clear();
+        this.answers.addAll(answers);
 
-        this.answers = answers;
         notifyDataSetChanged();
     }
 

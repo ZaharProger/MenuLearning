@@ -32,7 +32,7 @@ public class ResultsListAdapter extends
         this.results = results;
         sortAsc = true;
 
-        notifyDataSetChanged();
+        sortResults();
     }
 
     public void setSortAsc(boolean sortAsc) {
@@ -56,7 +56,7 @@ public class ResultsListAdapter extends
     public void onBindViewHolder(@NonNull ResultsListAdapter.ResultsListViewHolder holder, int position) {
         Result result = results.get(position);
 
-        String[] splittedResult = holder.resultHeaderText.getText().toString().split("[/]+");
+        String[] splittedResult = result.getResult().split("[/]+");
         int correctAnswers = Integer.parseInt(splittedResult[0]);
         int answersAmount = Integer.parseInt(splittedResult[1]);
         int percentage = correctAnswers * 100 / answersAmount;
@@ -64,6 +64,7 @@ public class ResultsListAdapter extends
         int colorId = percentage < 50? R.color.bad_result : percentage < 80? R.color.ok_result :
                 R.color.good_result;
         holder.resultHeaderText.setBackgroundColor(context.getColor(colorId));
+        holder.resultHeaderText.setText(result.getResult());
         holder.nameText.setText(result.getName());
 
         SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.ROOT);
@@ -76,20 +77,12 @@ public class ResultsListAdapter extends
     }
 
     public void sortResults() {
-        Stream<Result> sortedResults;
-
         if (sortAsc) {
-            sortedResults = results
-                    .stream()
-                    .sorted(Comparator.comparingLong(Result::getDate).reversed());
+            results.sort(Comparator.comparingLong(Result::getDate).reversed());
         }
         else {
-            sortedResults = results
-                    .stream()
-                    .sorted(Comparator.comparingLong(Result::getDate));
+            results.sort(Comparator.comparingLong(Result::getDate));
         }
-
-        results =  (ArrayList<Result>) sortedResults.collect(Collectors.toList());
         notifyDataSetChanged();
     }
 

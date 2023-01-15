@@ -11,6 +11,7 @@ import com.example.menulearning.constants.PrefsValues;
 import com.example.menulearning.constants.Routes;
 import com.example.menulearning.fragments.AboutFragment;
 import com.example.menulearning.fragments.BaseFragment;
+import com.example.menulearning.fragments.ResultsFragment;
 import com.example.menulearning.fragments.StartFragment;
 import com.example.menulearning.fragments.TestFragment;
 import com.example.menulearning.managers.Router;
@@ -53,7 +54,8 @@ public class MainActivity extends AppCompatActivity {
         List<BaseFragment> fragments = Arrays.asList(
                 new StartFragment(Routes.START),
                 new AboutFragment(Routes.ABOUT),
-                new TestFragment(Routes.TEST)
+                new TestFragment(Routes.TEST),
+                new ResultsFragment(Routes.RESULTS)
         );
         router = Router.getInstance(this, R.id.viewContainer, fragments);
 

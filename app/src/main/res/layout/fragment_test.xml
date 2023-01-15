@@ -5,11 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/transparent"
+    android:fillViewport="true"
     android:padding="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/transparent">
 
         <TextView
@@ -17,6 +18,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:autoSizeTextType="none"
             android:background="@drawable/question_block_style"
             android:padding="10dp"
             android:textAlignment="center"
@@ -33,6 +35,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:autoSizeTextType="none"
             android:padding="10dp"
             android:textAlignment="center"
             android:textColor="@color/primary"
@@ -47,9 +50,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/answersList"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_marginTop="16dp"
             android:background="@color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/questionText" />
@@ -58,7 +62,7 @@
             android:id="@+id/appLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="96dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -69,6 +73,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
+            android:autoSizeTextType="none"
             android:textAlignment="center"
             android:textColorHighlight="@color/text"
             android:textColorLink="@color/text"
@@ -82,6 +87,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:autoSizeTextType="uniform"
             android:text="@string/result_footer"
             android:textAlignment="center"
             android:textColor="@color/primary"

@@ -22,7 +22,7 @@ public class TestManager {
 
     public QuestionView getQuestionView() {
         Question question = null;
-        if (currentQuestion < questions.size()) {
+        if (currentQuestion < questions.size() - 1) {
             currentQuestion += 1;
             question = questions.get(currentQuestion);
         }

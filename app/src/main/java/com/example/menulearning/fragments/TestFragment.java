@@ -29,8 +29,6 @@ import com.example.menulearning.managers.TestManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 public class TestFragment extends BaseFragment {
     private DbManager dbManager;
@@ -81,11 +79,9 @@ public class TestFragment extends BaseFragment {
                         .getDrawable(getContext(), backgroundId));
             }
 
-            new ScheduledThreadPoolExecutor(1).schedule(() -> {
-                renderComponents();
-                relatedView.setBackground(AppCompatResources
-                        .getDrawable(getContext(), R.drawable.answer_block_style));
-            }, 1500, TimeUnit.MILLISECONDS);
+            renderComponents();
+            relatedView.setBackground(AppCompatResources
+                    .getDrawable(getContext(), R.drawable.answer_block_style));
         }
         else {
             renderComponents();
@@ -106,7 +102,6 @@ public class TestFragment extends BaseFragment {
 
             AnswersListAdapter adapter = (AnswersListAdapter) ((RecyclerView)
                     fragmentView.findViewById(R.id.answersList)).getAdapter();
-
             adapter.setAnswers(questionView.getQuestion().getAnswers());
         }
         else {
@@ -134,8 +129,7 @@ public class TestFragment extends BaseFragment {
 
             String userName = prefs.getString(PrefsValues.USER_NAME.getStringValue(), "");
 
-            dbManager.addResult(new Result(0, userName, result,
-                    System.currentTimeMillis() / 1000L));
+            dbManager.addResult(new Result(0, userName, result, System.currentTimeMillis()));
         }
     }
 

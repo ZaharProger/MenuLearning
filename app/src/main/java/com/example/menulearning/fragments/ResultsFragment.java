@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,21 +35,35 @@ public class ResultsFragment extends BaseFragment {
 
         MainActivity parentActivity = (MainActivity) getActivity();
         dbManager = DbManager.getInstance(getContext(), parentActivity.getPrefs());
+        dbManager.fillRepositories();
 
         RecyclerView resultsList = fragmentView.findViewById(R.id.resultsList);
         resultsList.setHasFixedSize(true);
         resultsList.setLayoutManager(new LinearLayoutManager(getContext()));
         resultsList.setAdapter(new ResultsListAdapter(getContext(), dbManager.getResults()));
 
+        TextView noResultsText = fragmentView.findViewById(R.id.noResultsText);
         ImageButton sortButton = fragmentView.findViewById(R.id.sortButton);
-        sortButton.setOnClickListener(view -> {
-            ResultsListAdapter adapter = (ResultsListAdapter) resultsList.getAdapter();
-            adapter.setSortAsc(!adapter.isSortAsc());
-            adapter.sortResults();
 
-            sortButton.setBackgroundResource(adapter.isSortAsc()? R.drawable.ic_sort_asc :
-                    R.drawable.ic_sort_desc);
-        });
+        if (resultsList.getAdapter().getItemCount() != 0) {
+            sortButton.setVisibility(View.VISIBLE);
+            noResultsText.setVisibility(View.INVISIBLE);
+            resultsList.setVisibility(View.VISIBLE);
+
+            sortButton.setOnClickListener(view -> {
+                ResultsListAdapter adapter = (ResultsListAdapter) resultsList.getAdapter();
+                adapter.setSortAsc(!adapter.isSortAsc());
+                adapter.sortResults();
+
+                sortButton.setImageResource(adapter.isSortAsc()? R.drawable.ic_sort_asc :
+                        R.drawable.ic_sort_desc);
+            });
+        }
+        else {
+            sortButton.setVisibility(View.INVISIBLE);
+            resultsList.setVisibility(View.INVISIBLE);
+            noResultsText.setVisibility(View.VISIBLE);
+        }
 
         return fragmentView;
     }
