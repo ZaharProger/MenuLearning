@@ -2,6 +2,7 @@ package com.example.menulearning.fragments;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,17 +53,6 @@ public class TestFragment extends BaseFragment {
         answersList.setLayoutManager(new LinearLayoutManager(getContext()));
         answersList.setAdapter(new AnswersListAdapter(new ArrayList<>(), Arrays.asList(this)));
 
-//        if (Buffer.getTestManager() == null) {
-//            dbManager = DbManager.getInstance(getContext(),
-//                    ((MainActivity) getActivity()).getPrefs());
-//            dbManager.fillRepositories();
-//            ArrayList<Question> questions = dbManager.getQuestionsWithAnswers(8);
-//            testManager = new TestManager(questions);
-//        }
-//        else {
-//            testManager = Buffer.getTestManager();
-//        }
-
         ArrayList<Question> questions = null;
         if (!TestManager.isBuffered()) {
             dbManager = DbManager.getInstance(getContext(),
@@ -84,11 +74,23 @@ public class TestFragment extends BaseFragment {
                         R.drawable.correct_answer_style : R.drawable.wrong_answer_style;
                 relatedView.setBackground(AppCompatResources
                         .getDrawable(getContext(), backgroundId));
-            }
 
-            renderComponents();
-            relatedView.setBackground(AppCompatResources
-                    .getDrawable(getContext(), R.drawable.answer_block_style));
+                MainActivity parentActivity = (MainActivity) getActivity();
+
+                AnswersListAdapter adapter = (AnswersListAdapter) ((RecyclerView) fragmentView
+                        .findViewById(R.id.answersList)).getAdapter();
+                adapter.setClickable(false);
+                parentActivity.setAsyncFlag(true);
+
+                new Handler().postDelayed(() -> {
+                    renderComponents();
+                    relatedView.setBackground(AppCompatResources
+                            .getDrawable(getContext(), R.drawable.answer_block_style));
+
+                    adapter.setClickable(true);
+                    parentActivity.setAsyncFlag(false);
+                }, 1500);
+            }
         }
         else {
             renderComponents();
@@ -150,6 +152,5 @@ public class TestFragment extends BaseFragment {
         int number = Integer.parseInt(questionNumberString.split("[\\s]+")[1]) - 2;
 
         testManager.setCurrentQuestion(number);
-//        Buffer.setTestManager(testManager);
     }
 }

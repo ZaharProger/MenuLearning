@@ -23,6 +23,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private Router router;
+    private boolean asyncFlag;
 
     public Router getRouter() {
         return router;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        asyncFlag = false;
         sharedPreferences = getSharedPreferences(
                 PrefsValues.PREFS_NAME.getStringValue(),
                 MODE_PRIVATE
@@ -61,18 +63,21 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView navigationBar = findViewById(R.id.navigationBar);
         navigationBar.setOnItemSelectedListener((item) -> {
-            int itemId = item.getItemId();
-            Routes route = itemId == R.id.startItem? Routes.START : itemId == R.id.historyItem?
-                    Routes.RESULTS : Routes.ABOUT;
+            Routes route = null;
+            if (!asyncFlag) {
+                int itemId = item.getItemId();
+                route = itemId == R.id.startItem? Routes.START : itemId == R.id.historyItem?
+                        Routes.RESULTS : Routes.ABOUT;
 
-            String testFlagKey = PrefsValues.TEST_FLAG_KEY.getStringValue();
-            if (route == Routes.START && sharedPreferences.contains(testFlagKey)) {
-                if (sharedPreferences.getBoolean(testFlagKey, false)) {
-                    route = Routes.TEST;
+                String testFlagKey = PrefsValues.TEST_FLAG_KEY.getStringValue();
+                if (route == Routes.START && sharedPreferences.contains(testFlagKey)) {
+                    if (sharedPreferences.getBoolean(testFlagKey, false)) {
+                        route = Routes.TEST;
+                    }
                 }
             }
 
-            return router.route(route);
+            return route != null && router.route(route);
         });
 
         navigationBar.setSelectedItemId(R.id.startItem);
@@ -85,5 +90,9 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
         prefsEditor.putBoolean(PrefsValues.TEST_FLAG_KEY.getStringValue(), false);
         prefsEditor.commit();
+    }
+
+    public void setAsyncFlag(boolean flag) {
+        asyncFlag = flag;
     }
 }

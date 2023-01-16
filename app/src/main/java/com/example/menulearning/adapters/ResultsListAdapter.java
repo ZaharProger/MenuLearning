@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ResultsListAdapter extends
         RecyclerView.Adapter<ResultsListAdapter.ResultsListViewHolder> {

@@ -20,10 +20,12 @@ public class AnswersListAdapter extends
 
     private ArrayList<Answer> answers;
     private List<BaseFragment> observers;
+    private boolean isClickable;
 
     public AnswersListAdapter(ArrayList<Answer> answers, List<BaseFragment> observers) {
         this.answers = answers;
         this.observers = observers;
+        isClickable = true;
         notifyDataSetChanged();
     }
 
@@ -42,8 +44,11 @@ public class AnswersListAdapter extends
         Answer answer = answers.get(position);
 
         holder.answerText.setText(answer.getText());
-        holder.answerText.setOnClickListener(view ->
-            observers.forEach(observer -> observer.updateView(answer, holder.answerText)));
+        holder.answerText.setOnClickListener(view -> {
+            if (isClickable) {
+                observers.forEach(observer -> observer.updateView(answer, holder.answerText));
+            }
+        });
     }
 
     @Override
@@ -56,6 +61,10 @@ public class AnswersListAdapter extends
         this.answers.addAll(answers);
 
         notifyDataSetChanged();
+    }
+
+    public void setClickable(boolean isClickable) {
+        this.isClickable = isClickable;
     }
 
     static class AnswersListViewHolder extends RecyclerView.ViewHolder {
