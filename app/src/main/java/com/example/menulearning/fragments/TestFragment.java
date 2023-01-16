@@ -23,7 +23,6 @@ import com.example.menulearning.entities.BaseEntity;
 import com.example.menulearning.entities.Question;
 import com.example.menulearning.entities.QuestionView;
 import com.example.menulearning.entities.Result;
-import com.example.menulearning.managers.Buffer;
 import com.example.menulearning.managers.DbManager;
 import com.example.menulearning.managers.TestManager;
 
@@ -53,17 +52,25 @@ public class TestFragment extends BaseFragment {
         answersList.setLayoutManager(new LinearLayoutManager(getContext()));
         answersList.setAdapter(new AnswersListAdapter(new ArrayList<>(), Arrays.asList(this)));
 
-        if (Buffer.getTestManager() == null) {
+//        if (Buffer.getTestManager() == null) {
+//            dbManager = DbManager.getInstance(getContext(),
+//                    ((MainActivity) getActivity()).getPrefs());
+//            dbManager.fillRepositories();
+//            ArrayList<Question> questions = dbManager.getQuestionsWithAnswers(8);
+//            testManager = new TestManager(questions);
+//        }
+//        else {
+//            testManager = Buffer.getTestManager();
+//        }
+
+        ArrayList<Question> questions = null;
+        if (!TestManager.isBuffered()) {
             dbManager = DbManager.getInstance(getContext(),
                     ((MainActivity) getActivity()).getPrefs());
-            dbManager.fillRepositories();
-            ArrayList<Question> questions = dbManager.getQuestionsWithAnswers(8);
-            testManager = new TestManager(questions);
-        }
-        else {
-            testManager = Buffer.getTestManager();
+            questions = dbManager.getQuestionsWithAnswers(8);
         }
 
+        testManager = TestManager.getInstance(questions);
         updateView(null, null);
 
         return fragmentView;
@@ -110,6 +117,7 @@ public class TestFragment extends BaseFragment {
             prefsEditor.putBoolean(PrefsValues.TEST_FLAG_KEY.getStringValue(), false);
             prefsEditor.apply();
 
+            TestManager.clearBuffer();
             String result = testManager.makeStatistics();
             int percentage = testManager.getPercentage();
             int colorId = percentage < 50? R.color.bad_result : percentage < 80? R.color.ok_result :
@@ -142,6 +150,6 @@ public class TestFragment extends BaseFragment {
         int number = Integer.parseInt(questionNumberString.split("[\\s]+")[1]) - 2;
 
         testManager.setCurrentQuestion(number);
-        Buffer.setTestManager(testManager);
+//        Buffer.setTestManager(testManager);
     }
 }

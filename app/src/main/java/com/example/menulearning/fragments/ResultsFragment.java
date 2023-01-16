@@ -35,7 +35,6 @@ public class ResultsFragment extends BaseFragment {
 
         MainActivity parentActivity = (MainActivity) getActivity();
         dbManager = DbManager.getInstance(getContext(), parentActivity.getPrefs());
-        dbManager.fillRepositories();
 
         RecyclerView resultsList = fragmentView.findViewById(R.id.resultsList);
         resultsList.setHasFixedSize(true);

@@ -45,6 +45,7 @@ public class DbManager extends SQLiteOpenHelper {
         if (dbManager == null) {
             dbManager = new DbManager(context, prefs);
         }
+        fillRepositories();
 
         return dbManager;
     }
@@ -75,12 +76,12 @@ public class DbManager extends SQLiteOpenHelper {
         }
     }
 
-    public void fillRepositories() {
-        questions.clear();
-        answers.clear();
-        results.clear();
+    public static void fillRepositories() {
+        dbManager.questions.clear();
+        dbManager.answers.clear();
+        dbManager.results.clear();
 
-        SQLiteDatabase database = getWritableDatabase();
+        SQLiteDatabase database = dbManager.getWritableDatabase();
 
         List<DbValues> getRequests = Arrays.asList(
                 DbValues.GET_ANSWERS,
@@ -109,12 +110,13 @@ public class DbManager extends SQLiteOpenHelper {
                             switch (request) {
                                 case GET_QUESTIONS:
                                     int questionId = cursor.getInt(idColumnIndex);
-                                    ArrayList<Answer> questionAnswers = (ArrayList<Answer>) answers
+                                    ArrayList<Answer> questionAnswers = (ArrayList<Answer>)
+                                            dbManager.answers
                                             .stream()
                                             .filter(answer -> answer.getQuestionId() == questionId)
                                             .collect(Collectors.toList());
 
-                                    questions.add(new Question(
+                                    dbManager.questions.add(new Question(
                                             questionId,
                                             cursor.getString(textColumnIndex),
                                             0,
@@ -122,7 +124,7 @@ public class DbManager extends SQLiteOpenHelper {
                                     ));
                                     break;
                                 case GET_ANSWERS:
-                                    answers.add(new Answer(
+                                    dbManager.answers.add(new Answer(
                                             cursor.getInt(idColumnIndex),
                                             cursor.getString(textColumnIndex),
                                             cursor.getInt(questionIdColumnIndex)
@@ -142,7 +144,7 @@ public class DbManager extends SQLiteOpenHelper {
                                     int dateColumnIndex = cursor
                                             .getColumnIndex(DbValues.DATE_KEY.getStringValue());
 
-                                    results.add(new Result(
+                                    dbManager.results.add(new Result(
                                             cursor.getInt(idColumnIndex),
                                             cursor.getString(nameColumnIndex),
                                             cursor.getString(resultColumnIndex),
@@ -161,7 +163,7 @@ public class DbManager extends SQLiteOpenHelper {
             }
 
             if (request == DbValues.GET_CORRECT_ANSWERS) {
-                questions = (ArrayList<Question>) questions
+                dbManager.questions = (ArrayList<Question>) dbManager.questions
                         .stream()
                         .map(question -> new Question(
                                 question.getKey(),
@@ -202,7 +204,7 @@ public class DbManager extends SQLiteOpenHelper {
 
         int i = 0;
         while (i < amount) {
-            Question question = questions.get(random.nextInt(questions.size()));
+            Question question = dbManager.questions.get(random.nextInt(questions.size()));
             boolean isNotExists = chosenQuestions
                     .stream()
                     .noneMatch(chosenQuestion ->
@@ -227,6 +229,6 @@ public class DbManager extends SQLiteOpenHelper {
     }
 
     public ArrayList<Result> getResults() {
-        return results;
+        return dbManager.results;
     }
 }
