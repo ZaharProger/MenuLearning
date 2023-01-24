@@ -30,7 +30,7 @@ import com.example.menulearning.managers.TestManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class TestFragment extends BaseFragment {
+public class TestFragment extends BaseFragment implements IUpdatable {
     private DbManager dbManager;
     private TestManager testManager;
 
@@ -119,7 +119,6 @@ public class TestFragment extends BaseFragment {
             prefsEditor.putBoolean(PrefsValues.TEST_FLAG_KEY.getStringValue(), false);
             prefsEditor.apply();
 
-            TestManager.clearBuffer();
             String result = testManager.makeStatistics();
             int percentage = testManager.getPercentage();
             int colorId = percentage < 50? R.color.bad_result : percentage < 80? R.color.ok_result :
@@ -150,7 +149,6 @@ public class TestFragment extends BaseFragment {
         String questionNumberString = ((TextView) fragmentView
                 .findViewById(R.id.questionNumber)).getText().toString();
         int number = Integer.parseInt(questionNumberString.split("[\\s]+")[1]) - 2;
-
         testManager.setCurrentQuestion(number);
     }
 }

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.menulearning.R;
 import com.example.menulearning.entities.Answer;
 import com.example.menulearning.fragments.BaseFragment;
+import com.example.menulearning.fragments.IUpdatable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,10 @@ public class AnswersListAdapter extends
         RecyclerView.Adapter<AnswersListAdapter.AnswersListViewHolder> {
 
     private ArrayList<Answer> answers;
-    private List<BaseFragment> observers;
+    private List<IUpdatable> observers;
     private boolean isClickable;
 
-    public AnswersListAdapter(ArrayList<Answer> answers, List<BaseFragment> observers) {
+    public AnswersListAdapter(ArrayList<Answer> answers, List<IUpdatable> observers) {
         this.answers = answers;
         this.observers = observers;
         isClickable = true;

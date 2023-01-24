@@ -1,7 +1,5 @@
 package com.example.menulearning.managers;
 
-import android.util.Log;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 

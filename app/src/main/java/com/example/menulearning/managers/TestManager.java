@@ -6,7 +6,7 @@ import com.example.menulearning.entities.QuestionView;
 import java.util.ArrayList;
 
 public class TestManager {
-    private static boolean isBuffered;
+    private static boolean isBuffered = false;
     private static TestManager testManager;
     private int correctAnswers;
     private int currentQuestion;
@@ -16,6 +16,9 @@ public class TestManager {
         if (testManager == null) {
             testManager = new TestManager(questions);
         }
+        else if (questions != null){
+            testManager.questions = questions;
+        }
 
         return testManager;
     }
@@ -24,24 +27,26 @@ public class TestManager {
         this.questions = questions;
         correctAnswers = 0;
         currentQuestion = -1;
-        clearBuffer();
     }
 
     public static boolean isBuffered() {
         return isBuffered;
     }
 
-    public static void clearBuffer() {
+    public void clearBuffer() {
         isBuffered = false;
+        testManager.currentQuestion = -1;
+        testManager.correctAnswers = 0;
     }
 
     public void setCurrentQuestion(int currentQuestion) {
-        if (!isBuffered) {
-            isBuffered = true;
-            testManager.setCurrentQuestion(currentQuestion);
+        if (this.currentQuestion == -1) {
+            clearBuffer();
         }
-
-        this.currentQuestion = currentQuestion;
+        else {
+            isBuffered = true;
+            testManager.currentQuestion = currentQuestion;
+        }
     }
 
     public QuestionView getQuestionView() {
@@ -49,6 +54,9 @@ public class TestManager {
         if (currentQuestion < questions.size() - 1) {
             currentQuestion += 1;
             question = questions.get(currentQuestion);
+        }
+        else {
+            currentQuestion = -1;
         }
 
         return question != null? new QuestionView(currentQuestion, question) : null;

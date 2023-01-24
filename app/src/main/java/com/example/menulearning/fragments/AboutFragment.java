@@ -41,8 +41,4 @@ public class AboutFragment extends BaseFragment {
         return fragmentView;
     }
 
-    @Override
-    public void updateView(BaseEntity<Integer> relatedEntity, View relatedView) {
-
-    }
 }

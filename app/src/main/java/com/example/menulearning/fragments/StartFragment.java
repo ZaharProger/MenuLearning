@@ -44,15 +44,14 @@ public class StartFragment extends BaseFragment {
 
         ArrayList<ValidationCase> validationCases = new ArrayList<>();
         validationCases.add(new ValidationCase(
-                ValidationTypes.EMPTY_STRING,
-                (field) -> !(field.equals("") ||
-                        field.split(ValidationTypes.EMPTY_STRING.getStringValue()).length == 0),
-                getString(R.string.empty_string_error)
+                ValidationTypes.VALID_CHARACTERS,
+                (field) -> field.matches(ValidationTypes.VALID_CHARACTERS.getStringValue()),
+                getString(R.string.extra_characters_error)
         ));
         validationCases.add(new ValidationCase(
-                ValidationTypes.EXTRA_CHARACTERS,
-                (field) -> field.matches(ValidationTypes.EXTRA_CHARACTERS.getStringValue()),
-                getString(R.string.extra_characters_error)
+                ValidationTypes.EMPTY_STRING,
+                (field) -> !(field.matches(ValidationTypes.EMPTY_STRING.getStringValue())),
+                getString(R.string.empty_string_error)
         ));
 
         Validator validator = new Validator(validationCases);
@@ -88,10 +87,5 @@ public class StartFragment extends BaseFragment {
         super.onViewStateRestored(savedInstanceState);
 
         ((EditText) getView().findViewById(R.id.nameField)).setText("");
-    }
-
-    @Override
-    public void updateView(BaseEntity<Integer> relatedEntity, View relatedView) {
-
     }
 }
